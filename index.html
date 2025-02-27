@@ -2,6 +2,11 @@
 <html lang="en">
 
 <head>
+  <title>AniCart</title>
+  <meta name="description" content="A simple Manga list app to keep track of your favorite manga and Anime">
+  <meta name="keywords" content="Manga, Anime, List, AniCart, Manga List, Anime List">
+
+  <meta name="robots" content="index, follow">
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,11 +16,15 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/asset/favicon_io/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/asset/favicon_io/favicon-16x16.png">
   <link rel="manifest" href="/asset/favicon_io/site.webmanifest">
+  
   <!-- fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@1,300&display=swap" rel="stylesheet">
-  <title>AniCart</title>
+  
+  <!-- preload -->
+  <link rel="preload" href="./index.css" as="style">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@1,300&display=swap" as="font" crossorigin>
 </head>
 
 <body>
@@ -26,8 +35,11 @@
   </header>
   <div class="top">
     <img class="logo" src="./asset/hero.jpg" alt="logo">
-    <input type="text" id="inputel" placeholder="Anime (or) Manga Title">
-    <button id="add">Add to Cart</button>
+    <input type="text" id="inputel" placeholder="(Press Enter to add)" />
+    <button id="add">Add to Cart</button> 
+    <button id="clear-all">Clear All</button>
+    <p class="storage-notice">🔒 Your data is stored locally in your browser only<br>
+      Double tap/click items to remove them</p>
   </div>
   </div>
   <div class="list-section">
