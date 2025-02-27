@@ -21,15 +21,20 @@ Introducing AniCart, a web-app tool that lets anime and manga enthusiasts create
 - Double-click on items to mark them as watched
 - Use the search feature to find specific titles
 
-## Contributing
-Contributions are welcome! Please follow these steps:
+## 🤝 Contributing
 
-- Fork the repository
-Create a new branch (git checkout -b feature-branch)
-- Make your changes
-Commit your changes (git commit -m 'Add new feature')
-- Push to the branch (git push origin feature-branch)
-Create a new Pull Request
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details
+## 📄 License
+
+Licensed under the MIT License. See `LICENSE` for details.
+
+## 👨‍💻 Developer
+
+Built with ❤️ by Maxx 
+- GitHub: [@Maxxjx](https://github.com/Maxxjx)
+- Portfolio: [Coming Soon]
