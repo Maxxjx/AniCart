@@ -7,37 +7,57 @@ import {
   remove,
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
+// Get the Firebase URL from localStorage (if available)
+const storedFirebaseUrl = localStorage.getItem('firebaseUrl');
 const appSettings = {
-  databaseURL: localStorage.getItem('firebaseUrl'),
+  databaseURL: storedFirebaseUrl // May be null if not configured yet
 };
 
-const app = initializeApp(appSettings);
-let database = getDatabase(app);
-let animeInDB = ref(database, "anime");
+let app, database, animeInDB;
 
-// After Firebase initialization, add this:
-onValue(animeInDB, (snapshot) => {
-    // Mark as synced when connection is established
-    syncButton.classList.add('synced');
-    syncButton.textContent = 'Synced';
-    
-    if (snapshot.exists()) {
+if (storedFirebaseUrl) {
+  // Initialize Firebase only if a URL is stored
+  try {
+    app = initializeApp(appSettings);
+    database = getDatabase(app);
+    animeInDB = ref(database, "anime");
+
+    // After Firebase initialization, add this:
+    onValue(animeInDB, (snapshot) => {
+      // Mark as synced when connection is established
+      syncButton.classList.add('synced');
+      syncButton.textContent = 'Synced';
+
+      if (snapshot.exists()) {
         animeList = [];
         snapshot.forEach((childSnapshot) => {
-            animeList.push({
-                id: childSnapshot.key,
-                value: childSnapshot.val().value
-            });
+          animeList.push({
+            id: childSnapshot.key,
+            value: childSnapshot.val().value
+          });
         });
         localStorage.setItem('animeList', JSON.stringify(animeList));
         renderAnimeList();
-    }
-}, (error) => {
-    // Remove synced state if there's an error
-    syncButton.classList.remove('synced');
-    syncButton.textContent = 'Sync';
-    console.error('Firebase sync error:', error);
-});
+      } else {
+        // Clear list if no data exists
+        animeList = [];
+        localStorage.setItem('animeList', JSON.stringify(animeList));
+        renderAnimeList();
+      }
+    }, (error) => {
+      // Remove synced state if there's an error
+      syncButton.classList.remove('synced');
+      syncButton.textContent = 'Sync';
+      console.error('Firebase sync error:', error);
+    });
+
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+  }
+} else {
+  // Notify the user that no Firebase configuration exists yet
+  console.warn("No Firebase URL configured. Please use the Sync button to configure.");
+}
 
 const inputFieldEl = document.getElementById("inputel");
 const addButtonEl = document.getElementById("add");
@@ -59,7 +79,6 @@ inputFieldEl.addEventListener("keypress", function(event) {
 
 addButtonEl.addEventListener("click", function () {
   let inputValue = inputFieldEl.value;
-  
   const newAnime = {
     id: Date.now().toString(),
     value: inputValue
@@ -69,30 +88,34 @@ addButtonEl.addEventListener("click", function () {
   animeList.push(newAnime);
   localStorage.setItem('animeList', JSON.stringify(animeList));
   
-  // Push to Firebase
-  push(animeInDB, newAnime);
+  // Push to Firebase only if animeInDB exists
+  if(animeInDB) {
+    push(animeInDB, newAnime);
+  }
   
   clearInputField();
   renderAnimeList();
 });
 
 clearAllBtn.addEventListener("click", function() {
-    if (animeList.length === 0) {
-        alert("List is already empty!");
-        return;
+  if (animeList.length === 0) {
+    alert("List is already empty!");
+    return;
+  }
+  
+  const confirmClear = confirm("Are you sure you want to clear all items? This cannot be undone!");
+  
+  if (confirmClear) {
+    // Clear Firebase if available
+    if(animeInDB) {
+      remove(animeInDB);
     }
     
-    const confirmClear = confirm("Are you sure you want to clear all items? This cannot be undone!");
-    
-    if (confirmClear) {
-        // Clear Firebase
-        remove(animeInDB);
-        
-        // Clear localStorage
-        animeList = [];
-        localStorage.setItem('animeList', JSON.stringify(animeList));
-        renderAnimeList();
-    }
+    // Clear localStorage
+    animeList = [];
+    localStorage.setItem('animeList', JSON.stringify(animeList));
+    renderAnimeList();
+  }
 });
 
 function renderAnimeList() {
@@ -120,11 +143,13 @@ function addlist(item) {
   newItem.textContent = item.value;
 
   const removeItem = () => {
-    // Remove from Firebase
-    const itemRef = ref(database, `anime/${item.id}`);
-    remove(itemRef);
+    // Remove from Firebase if available
+    if (database && animeInDB) {
+      const itemRef = ref(database, `anime/${item.id}`);
+      remove(itemRef);
+    }
     
-    // Remove from local storage
+    // Remove from local storage and update UI
     animeList = animeList.filter(anime => anime.id !== item.id);
     localStorage.setItem('animeList', JSON.stringify(animeList));
     renderAnimeList();
