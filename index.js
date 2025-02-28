@@ -8,7 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
 const appSettings = {
-  databaseURL: localStorage.getItem('firebaseUrl') || "https://anilist-845d2-default-rtdb.firebaseio.com/",
+  databaseURL: localStorage.getItem('firebaseUrl'),
 };
 
 const app = initializeApp(appSettings);
@@ -72,7 +72,7 @@ addButtonEl.addEventListener("click", function () {
   // Push to Firebase
   push(animeInDB, newAnime);
   
-  clearlinputfield();
+  clearInputField();
   renderAnimeList();
 });
 
@@ -85,6 +85,10 @@ clearAllBtn.addEventListener("click", function() {
     const confirmClear = confirm("Are you sure you want to clear all items? This cannot be undone!");
     
     if (confirmClear) {
+        // Clear Firebase
+        remove(animeInDB);
+        
+        // Clear localStorage
         animeList = [];
         localStorage.setItem('animeList', JSON.stringify(animeList));
         renderAnimeList();
@@ -107,7 +111,7 @@ function clearlist() {
   listItem.innerHTML = "";
 }
 
-function clearlinputfield() {
+function clearInputField() {
   inputFieldEl.value = "";
 }
 
@@ -115,24 +119,27 @@ function addlist(item) {
   let newItem = document.createElement("li");
   newItem.textContent = item.value;
 
+  const removeItem = () => {
+    // Remove from Firebase
+    const itemRef = ref(database, `anime/${item.id}`);
+    remove(itemRef);
+    
+    // Remove from local storage
+    animeList = animeList.filter(anime => anime.id !== item.id);
+    localStorage.setItem('animeList', JSON.stringify(animeList));
+    renderAnimeList();
+  };
+
   let lastTouchTime = 0;
   newItem.addEventListener("touchend", function(e) {
     const now = Date.now();
     if (now - lastTouchTime < 300) {
-      // Double tap detected
-      animeList = animeList.filter(anime => anime.id !== item.id);
-      localStorage.setItem('animeList', JSON.stringify(animeList));
-      renderAnimeList();
+      removeItem();
     }
     lastTouchTime = now;
   });
 
-  newItem.addEventListener("dblclick", function () {
-    // Remove item from array and update localStorage with double click from desktop
-    animeList = animeList.filter(anime => anime.id !== item.id);
-    localStorage.setItem('animeList', JSON.stringify(animeList));
-    renderAnimeList();
-  });
+  newItem.addEventListener("dblclick", removeItem);
 
   listItem.append(newItem);
 }
@@ -146,24 +153,19 @@ const firebaseUrlInput = document.getElementById('firebaseUrl');
 const saveConfig = document.getElementById('saveConfig');
 const cancelConfig = document.getElementById('cancelConfig');
 
-// Update the sync button click handler
+// Remove duplicate syncButton event listener and merge sync logic:
 syncButton.addEventListener('click', () => {
-    syncButton.classList.remove('synced');
-    syncButton.textContent = 'Sync';
-    modalOverlay.style.display = 'block';
-    const savedUrl = localStorage.getItem('firebaseUrl');
-    if (savedUrl) {
-        firebaseUrlInput.value = savedUrl;
+    if (syncButton.classList.contains('synced')) {
+        syncButton.classList.remove('synced');
+        syncButton.textContent = 'Sync';
+        alert('Device unsynced. Data will not be updated.');
+    } else {
+        modalOverlay.style.display = 'block';
+        const savedUrl = localStorage.getItem('firebaseUrl');
+        if (savedUrl) {
+            firebaseUrlInput.value = savedUrl;
+        }
     }
-});
-
-// Show modal
-syncButton.addEventListener('click', () => {
-  modalOverlay.style.display = 'block';
-  const savedUrl = localStorage.getItem('firebaseUrl');
-  if (savedUrl) {
-    firebaseUrlInput.value = savedUrl;
-  }
 });
 
 // Close modal handlers
