@@ -167,6 +167,16 @@ li:hover {
   z-index: 100;
 }
 
+.sync-button.synced {
+  background-color: #1a1b1f;
+  color: #00ff75;
+  border-color: #00ff75;
+}
+
+.sync-button.synced::after {
+  content: " ✓";
+}
+
 .modal-overlay {
   display: none;
   position: fixed;

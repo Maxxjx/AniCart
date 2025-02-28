@@ -8,12 +8,36 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
 const appSettings = {
-  databaseURL: "https://anilist-845d2-default-rtdb.firebaseio.com/",
+  databaseURL: localStorage.getItem('firebaseUrl') || "https://anilist-845d2-default-rtdb.firebaseio.com/",
 };
 
 const app = initializeApp(appSettings);
 let database = getDatabase(app);
 let animeInDB = ref(database, "anime");
+
+// After Firebase initialization, add this:
+onValue(animeInDB, (snapshot) => {
+    // Mark as synced when connection is established
+    syncButton.classList.add('synced');
+    syncButton.textContent = 'Synced';
+    
+    if (snapshot.exists()) {
+        animeList = [];
+        snapshot.forEach((childSnapshot) => {
+            animeList.push({
+                id: childSnapshot.key,
+                value: childSnapshot.val().value
+            });
+        });
+        localStorage.setItem('animeList', JSON.stringify(animeList));
+        renderAnimeList();
+    }
+}, (error) => {
+    // Remove synced state if there's an error
+    syncButton.classList.remove('synced');
+    syncButton.textContent = 'Sync';
+    console.error('Firebase sync error:', error);
+});
 
 const inputFieldEl = document.getElementById("inputel");
 const addButtonEl = document.getElementById("add");
@@ -36,16 +60,18 @@ inputFieldEl.addEventListener("keypress", function(event) {
 addButtonEl.addEventListener("click", function () {
   let inputValue = inputFieldEl.value;
   
-  // Generate a unique ID using timestamp
   const newAnime = {
     id: Date.now().toString(),
     value: inputValue
   };
   
+  // Update localStorage
   animeList.push(newAnime);
   localStorage.setItem('animeList', JSON.stringify(animeList));
   
-  console.log(`${inputValue} added to localStorage`);
+  // Push to Firebase
+  push(animeInDB, newAnime);
+  
   clearlinputfield();
   renderAnimeList();
 });
@@ -119,6 +145,17 @@ const helpIcon = document.getElementById('helpIcon');
 const firebaseUrlInput = document.getElementById('firebaseUrl');
 const saveConfig = document.getElementById('saveConfig');
 const cancelConfig = document.getElementById('cancelConfig');
+
+// Update the sync button click handler
+syncButton.addEventListener('click', () => {
+    syncButton.classList.remove('synced');
+    syncButton.textContent = 'Sync';
+    modalOverlay.style.display = 'block';
+    const savedUrl = localStorage.getItem('firebaseUrl');
+    if (savedUrl) {
+        firebaseUrlInput.value = savedUrl;
+    }
+});
 
 // Show modal
 syncButton.addEventListener('click', () => {
