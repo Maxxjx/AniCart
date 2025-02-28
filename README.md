@@ -1,4 +1,6 @@
-![AniCart logo Screenshot](asset/anicartfulllogo.jpg)
+<p align="center">
+  <img src="asset/anicartfulllogo.jpg" alt="AniCart logo" width="200"/>
+</p>
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Firebase](https://img.shields.io/badge/Firebase-Ready-orange)](https://firebase.google.com/)
