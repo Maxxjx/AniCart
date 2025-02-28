@@ -1,10 +1,12 @@
 :root {
   --color-background: #181818; /* Updated dark background */
-  --color-text: #D1D5DB;
-  --color-primary: #8A2BE2; /* Neon purple accent */
+  --color-text: #d1d5db;
+  --color-primary: #8a2be2; /* Neon purple accent */
   --color-secondary: #9b00e4; /* Remains for secondary if needed */
-  --color-accent: #38BDF8;
+  --color-accent: #38bdf8;
 }
+
+/* TODO: Minify CSS for production deployment */
 
 body {
   background-color: var(--color-background); /* Deep Black background */
@@ -40,26 +42,28 @@ nav > img {
   font-style: italic;
 }
 .input {
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
   font-weight: 500;
-  font-size: .8vw;
+  font-size: 0.8vw;
   color: #fff;
   background-color: var(--color-background); /* Consistent dark surface */
-  box-shadow: 0 0 .4vw rgba(0,0,0,0.5), 0 0 0 .15vw transparent;
+  box-shadow: 0 0 0.4vw rgba(0, 0, 0, 0.5), 0 0 0 0.15vw transparent;
   border-radius: 0.4vw;
   border: none;
   outline: none;
   padding: 0.4vw;
   max-width: 190px;
-  transition: .4s;
+  transition: 0.4s;
 }
 
 .input:hover {
-  box-shadow: 0 0 0 .15vw rgba(135, 207, 235, 0.186);
+  box-shadow: 0 0 0 0.15vw rgba(135, 207, 235, 0.186);
 }
 
 .input:focus {
-  box-shadow: 0 0 0 .15vw var(--color-primary); /* Vibrant Purple for focus */
+  box-shadow: 0 0 0 0.15vw var(--color-primary); /* Vibrant Purple for focus */
 }
 #inputel {
   color: var(--color-text); /* Soft White text */
@@ -83,7 +87,8 @@ nav > img {
   font-size: 20px;
 }
 #add:hover {
-  box-shadow: inset 2px -3px 16px 0px var(--color-secondary), -1px -1px 3px 0px var(--color-primary);
+  box-shadow: inset 2px -3px 16px 0px var(--color-secondary),
+    -1px -1px 3px 0px var(--color-primary);
   cursor: pointer;
 }
 
@@ -100,7 +105,7 @@ nav > img {
 }
 
 #clear-all:hover {
-  box-shadow: inset 2px -3px 16px 0px #b33452, -1px -1px 3px 0px #CF6679;
+  box-shadow: inset 2px -3px 16px 0px #b33452, -1px -1px 3px 0px #cf6679;
   cursor: pointer;
 }
 
@@ -109,17 +114,17 @@ nav > img {
   height: 254px;
   background-color: #1e1e1e; /* Dark surface */
   border-radius: 20px;
-  transition: all .2s;
- }
- 
- .ul li:hover {
+  transition: all 0.2s;
+}
+
+.ul li:hover {
   transform: scale(0.98);
   border-radius: 20px;
- }
- 
- .ul:hover {
-  box-shadow: 0px 0px 30px 1px rgba(187, 134, 252, 0.30); /* Purple shadow */
- }
+}
+
+.ul:hover {
+  box-shadow: 0px 0px 30px 1px rgba(187, 134, 252, 0.3); /* Purple shadow */
+}
 ul {
   display: flex;
   flex-wrap: wrap;
@@ -129,7 +134,7 @@ ul {
   padding-left: 15px;
   padding-right: 15px;
   border-radius: 20px;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 ul li {
   font-size: x-large;
@@ -147,7 +152,7 @@ ul li {
 li:hover {
   transform: scale(0.98);
   background-color: #1e1e1e;
-  box-shadow: 0px 0px 30px 1px rgba(187, 134, 252, 0.30); /* Purple shadow */
+  box-shadow: 0px 0px 30px 1px rgba(187, 134, 252, 0.3); /* Purple shadow */
   cursor: pointer;
 }
 

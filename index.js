@@ -234,3 +234,5 @@ saveConfig.addEventListener('click', () => {
   alert('Firebase configuration updated successfully!');
 });
 
+// TODO: Minify this JavaScript file during production build
+
