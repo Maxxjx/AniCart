@@ -1,4 +1,4 @@
-# AniCart 📺
+![AniCart logo Screenshot](asset/anicartfulllogo.jpg)
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Firebase](https://img.shields.io/badge/Firebase-Ready-orange)](https://firebase.google.com/)
