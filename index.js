@@ -1,3 +1,20 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  push,
+  onValue,
+  remove,
+} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+const appSettings = {
+  databaseURL: "https://anilist-845d2-default-rtdb.firebaseio.com/",
+};
+
+const app = initializeApp(appSettings);
+let database = getDatabase(app);
+let animeInDB = ref(database, "anime");
+
 const inputFieldEl = document.getElementById("inputel");
 const addButtonEl = document.getElementById("add");
 const listItem = document.getElementById("list");
@@ -93,4 +110,63 @@ function addlist(item) {
 
   listItem.append(newItem);
 }
+
+// Sync functionality
+const syncButton = document.getElementById('syncButton');
+const modalOverlay = document.getElementById('modalOverlay');
+const closeModal = document.getElementById('closeModal');
+const helpIcon = document.getElementById('helpIcon');
+const firebaseUrlInput = document.getElementById('firebaseUrl');
+const saveConfig = document.getElementById('saveConfig');
+const cancelConfig = document.getElementById('cancelConfig');
+
+// Show modal
+syncButton.addEventListener('click', () => {
+  modalOverlay.style.display = 'block';
+  const savedUrl = localStorage.getItem('firebaseUrl');
+  if (savedUrl) {
+    firebaseUrlInput.value = savedUrl;
+  }
+});
+
+// Close modal handlers
+[closeModal, cancelConfig, modalOverlay].forEach(element => {
+  element.addEventListener('click', (e) => {
+    if (e.target === element) {
+      modalOverlay.style.display = 'none';
+    }
+  });
+});
+
+// Prevent modal close when clicking inside
+document.querySelector('.modal').addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+
+// Help icon
+helpIcon.addEventListener('click', () => {
+  window.open('https://firebase.google.com/docs/database/web/start', '_blank');
+});
+
+// Save configuration
+saveConfig.addEventListener('click', () => {
+  const url = firebaseUrlInput.value;
+  
+  // Validate Firebase URL format
+  if (!url.match(/^https:\/\/.+-default-rtdb\.firebaseio\.com\/?$/)) {
+    alert('Please enter a valid Firebase Realtime Database URL');
+    return;
+  }
+  
+  localStorage.setItem('firebaseUrl', url);
+  appSettings.databaseURL = url;
+  
+  // Reinitialize Firebase with new URL
+  const newApp = initializeApp(appSettings);
+  database = getDatabase(newApp);
+  animeInDB = ref(database, "anime");
+  
+  modalOverlay.style.display = 'none';
+  alert('Firebase configuration updated successfully!');
+});
 

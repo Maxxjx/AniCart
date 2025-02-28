@@ -38,12 +38,33 @@
     <input type="text" id="inputel" placeholder="(Press Enter to add)" />
     <button id="add">Add to Cart</button> 
     <button id="clear-all">Clear All</button>
+    <button class="sync-button" id="syncButton">Sync</button>
     <p class="storage-notice">🔒 Your data is stored locally in your browser only<br>
       Double tap/click items to remove them</p>
   </div>
   </div>
   <div class="list-section">
     <ul id="list"></ul>
+  </div>
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Firebase Configuration</h3>
+        <button class="close-button" id="closeModal">×</button>
+      </div>
+      <div class="input-group">
+        <input 
+          type="text" 
+          id="firebaseUrl" 
+          placeholder="Enter Firebase Database URL"
+          value="https://anilist-845d2-default-rtdb.firebaseio.com/">
+        <span class="help-icon" id="helpIcon">?</span>
+      </div>
+      <div class="modal-buttons">
+        <button id="saveConfig">Save</button>
+        <button id="cancelConfig">Cancel</button>
+      </div>
+    </div>
   </div>
   <script src="./index.js" type="module" defer></script>
 </body>

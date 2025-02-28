@@ -152,3 +152,77 @@ li:hover {
   box-shadow: 0px 0px 30px 1px rgba(0, 255, 117, 0.30);
   cursor: pointer;
 }
+
+.sync-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #1a1b1f;
+  color: #00f2ff;
+  padding: 10px 20px;
+  border: 2px #00f2ff solid;
+  border-radius: 8px;
+  font-family: "Rubik", sans-serif;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1a1b1f;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px #00f2ff solid;
+  width: 90%;
+  max-width: 500px;
+  z-index: 1001;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.help-icon {
+  color: #00f2ff;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.modal input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #00f2ff;
+  border-radius: 4px;
+  background: #0a0b0e;
+  color: #e4e4e4;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
