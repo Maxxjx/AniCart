@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
   <title>AniCart</title>
-  <meta name="description" content="A simple Manga list app to keep track of your favorite manga and Anime">
-  <meta name="keywords" content="Manga, Anime, List, AniCart, Manga List, Anime List">
-
+  <meta name="description" content="A minimal app to track your favorite anime and manga">
+  <meta name="keywords" content="Manga, Anime, List, AniCart">
   <meta name="robots" content="index, follow">
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,56 +19,106 @@
   <!-- fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   
   <!-- preload -->
   <link rel="preload" href="./index.css" as="style">
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@1,300&display=swap" as="font" crossorigin>
-  <link rel="preload" href="./asset/hero.jpg" as="image">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" as="font" crossorigin>
+  <link rel="preload" href="./asset/hero.webp" as="image">
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://firebase.google.com">
 </head>
 
 <body>
+  <!-- Keyboard accessibility: skip to main content -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  
   <header>
-    <nav>
-      <img src="./asset/anicartfulllogo.webp" alt="AniCart Logo" width="200" height="auto" />
+    <nav aria-label="Main navigation">
+      <img src="./asset/anicartfulllogo.webp" alt="AniCart Logo" width="150" height="auto" />
       <ul class="nav-menu">
-        <li><a href="#" id="syncButton">Sync</a></li>
+        <li><a href="#" id="syncButton" aria-label="Sync data with Firebase">Sync</a></li>
+        <li><button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light theme">🌙</button></li>
       </ul>
     </nav>
   </header>
-  <div class="top">
-    <img class="logo" src="./asset/hero.webp" alt="Hero image" width="800" height="600" />
-    <input type="text" id="inputel" placeholder="(Press Enter to add)" />
-    <button id="add">Add to Cart</button> 
-    <button id="clear-all">Clear All</button>
-    <p class="storage-notice">🔒 Data is stored either on your device or within your database for secure access.<br>
-      Double tap/click items to remove them</p>
-  </div>
-  <div class="list-section">
-    <ul id="list"></ul>
-  </div>
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>Firebase Configuration</h3>
-        <span class="help-icon" id="helpIcon">?</span>
-        <button class="close-button" id="closeModal">×</button>
-      </div>
+  
+  <main id="main-content" class="container">
+    <div class="top">
+      <img class="logo" src="./asset/hero.webp" alt="Anime character shopping" width="180" height="180" />
+      
       <div class="input-group">
+        <label for="inputel" class="visually-hidden">Enter anime title</label>
         <input 
           type="text" 
-          id="firebaseUrl" 
-          placeholder="Enter Firebase Database URL"
-          value="">
+          id="inputel" 
+          placeholder="Add your favorite anime..." 
+          aria-required="true"
+          minlength="2"
+          maxlength="50"
+          autocomplete="off"
+        />
+        <div id="input-validation" class="input-validation-message" aria-live="polite"></div>
       </div>
-      <div class="modal-buttons">
-        <button id="saveConfig">Save</button>
-        <button id="cancelConfig">Cancel</button>
+      
+      <div class="button-group">
+        <button id="add" aria-label="Add to list">Add to Cart</button> 
+        <button id="clear-all" aria-label="Clear all items">Clear All</button>
       </div>
+      
+      <p class="storage-notice">🔒 Data is stored either on your device or within your database for secure access</p>
+        
+      <div class="loader" id="loader" aria-hidden="true"></div>
+    </div>
+    
+    <div class="list-section">
+      <h2 class="visually-hidden">Your Anime List</h2>
+      <ul id="list" aria-label="Anime list" aria-live="polite"></ul>
+    </div>
+  </main>
+  
+  <div class="modal-overlay" id="modalOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h3 id="modal-title">Firebase Config</h3>
+        <span class="help-icon" id="helpIcon" aria-label="Help information">?</span>
+        <button class="close-button" id="closeModal" aria-label="Close modal">×</button>
+      </div>
+      <form id="firebase-form">
+        <div class="input-group">
+          <label for="firebaseUrl" class="visually-hidden">Firebase Database URL</label>
+          <input 
+            type="text" 
+            id="firebaseUrl" 
+            placeholder="Enter Firebase Database URL"
+            aria-required="true"
+            pattern="https:\/\/.+-default-rtdb\.firebaseio\.com\/?$"
+            value="">
+          <div id="firebase-validation" class="input-validation-message" aria-live="polite"></div>
+        </div>
+        <div class="modal-buttons">
+          <button type="submit" id="saveConfig">Save</button>
+          <button type="button" id="cancelConfig">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
+  
+  <div class="toast" id="toast" aria-live="polite"></div>
+  
+  <style>
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  </style>
+  
   <script src="./index.js" type="module" defer></script>
 </body>
 
