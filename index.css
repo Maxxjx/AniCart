@@ -473,6 +473,7 @@ li.empty-state::before {
 
 .modal-overlay.active {
   opacity: 1;
+  display: block;
 }
 
 .modal {
@@ -481,18 +482,86 @@ li.empty-state::before {
   left: 50%;
   transform: translate(-50%, -50%) scale(0.9);
   background: var(--color-surface);
-  padding: 16px;
+  padding: 24px 20px;
   border-radius: var(--border-radius);
   border: 1px solid var(--color-primary);
   width: 90%;
-  max-width: 320px;
+  max-width: 360px;
   z-index: 1001;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: "Poppins", sans-serif;
+  color: var(--color-text);
+  text-align: center;
 }
 
 .modal-overlay.active .modal {
   transform: translate(-50%, -50%) scale(1);
+}
+
+/* Import Modal Specific Styling */
+#importModalOverlay .modal {
+  max-width: 400px;
+  padding: 28px 24px;
+}
+
+#importModalOverlay h2 {
+  font-size: 20px;
+  margin-bottom: 12px;
+  color: var(--color-primary);
+}
+
+#importModalOverlay p#importModalCount {
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: var(--color-text);
+}
+
+.import-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.import-options .modal-btn {
+  padding: 12px 0;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  border: 2px solid var(--color-primary);
+  background-color: transparent;
+  color: var(--color-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.import-options .modal-btn.primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px var(--shadow-purple);
+}
+
+.import-options .modal-btn.primary:hover {
+  background-color: var(--color-secondary);
+  box-shadow: 0 6px 16px var(--shadow-purple);
+}
+
+.import-options .modal-btn.secondary:hover {
+  background-color: rgba(138, 43, 226, 0.1);
+}
+
+.import-options .modal-btn.secondary {
+  background-color: transparent;
+}
+
+.import-options .modal-btn:hover {
+  color: var(--color-secondary);
+}
+
+.import-options .modal-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Export Button Specific Styling */

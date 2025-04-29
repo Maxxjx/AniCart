@@ -29,21 +29,24 @@
   <link rel="preconnect" href="https://firebase.google.com">
 </head>
 
-<body>
-  <!-- Keyboard accessibility: skip to main content -->
-  <a href="#main-content" class="skip-link">Skip to main content</a>
-  
-  <header>
-    <nav aria-label="Main navigation">
-      <img src="./asset/anicartfulllogo.webp" alt="AniCart Logo" width="150" height="auto" />
-      
-      <div class="nav-button-group">
-        <button id="syncButton" aria-label="Sync data with Firebase">Sync</button> 
-        <button id="exportButton" aria-label="Export your anime list">Export</button>
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light theme">🌙</button>
-      </div>
-    </nav>
-  </header>
+  <body>
+    <!-- Keyboard accessibility: skip to main content -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <header>
+      <nav aria-label="Main navigation">
+        <img src="./asset/anicartfulllogo.webp" alt="AniCart Logo" width="150" height="auto" />
+        
+        <div class="nav-button-group">
+          <button id="syncButton" aria-label="Sync data with Firebase">Sync</button> 
+          <button id="exportButton" aria-label="Export your anime list">Export</button>
+          <button id="importButton" aria-label="Import anime list from file">Import</button>
+          <input type="file" id="importFileInput" accept=".json" style="display:none;" />
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light theme">🌙</button>
+        </div>
+      </nav>
+    </header>
+
   
   
   <main id="main-content" class="container">
@@ -104,6 +107,20 @@
           <button type="button" id="cancelConfig">Cancel</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Import Options Modal -->
+  <div class="modal-overlay" id="importModalOverlay" aria-hidden="true" style="display:none;">
+    <div class="modal" role="dialog" aria-labelledby="importModalTitle">
+      <h2 id="importModalTitle">Import Options</h2>
+      <p id="importModalCount">Found 0 anime titles to import.</p>
+      
+      <div class="import-options">
+        <button id="replaceAll" class="modal-btn primary">Replace Current List</button>
+        <button id="mergeList" class="modal-btn secondary">Merge with Current List</button>
+        <button id="cancelImport" class="modal-btn">Cancel</button>
+      </div>
     </div>
   </div>
   

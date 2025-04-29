@@ -644,6 +644,302 @@ firebaseUrlInput.addEventListener('keypress', (e) => {
 document.addEventListener('touchstart', function() {}, { passive: true });
 window.addEventListener('scroll', function() {}, { passive: true });
 
+/**
+ * Import an anime list from a JSON file
+ * This function handles file selection, validation, and merging options
+ */
+function importAnimeList() {
+  // Show the hidden file input to select a file
+  const fileInput = document.getElementById('importFileInput');
+  if (fileInput) {
+    fileInput.value = ''; // Reset previous selection
+    fileInput.click();
+  }
+}
+
+/**
+ * Handles the file input change event for import
+ */
+function handleImportFileChange(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (!file.name.endsWith('.json')) {
+    showToast('Please select a JSON file', 'error');
+    return;
+  }
+
+  showLoader(true);
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    try {
+      const importedList = JSON.parse(e.target.result);
+
+      if (!Array.isArray(importedList)) {
+        throw new Error('Invalid file format: Expected an array');
+      }
+
+      const isValidFormat = importedList.every(item =>
+        item && typeof item === 'object' &&
+        'id' in item && 'value' in item &&
+        typeof item.value === 'string');
+
+      if (!isValidFormat) {
+        throw new Error('Invalid file format: Items missing required properties');
+      }
+
+      if (importedList.length > 0) {
+        showImportOptions(importedList);
+      } else {
+        showToast('The imported file contains no items', 'default');
+      }
+    } catch (error) {
+      console.error('Import error:', error);
+      showToast('Failed to import: ' + error.message, 'error');
+      showLoader(false);
+    }
+  };
+
+  reader.onerror = function() {
+    showToast('Error reading the file', 'error');
+    showLoader(false);
+  };
+
+  reader.readAsText(file);
+}
+
+
+
+/**
+ * Shows import options modal for how to handle the imported data
+ * @param {Array} importedList - The list of anime items to import
+ */
+function showImportOptions(importedList) {
+  const importModal = document.getElementById('importModalOverlay');
+  const importCount = document.getElementById('importModalCount');
+
+  if (!importModal || !importCount) {
+    showToast('Import modal elements not found', 'error');
+    return;
+  }
+
+  importCount.textContent = `Found ${importedList.length} anime titles to import.`;
+
+  importModal.style.display = 'block';
+  importModal.setAttribute('aria-hidden', 'false');
+
+  setTimeout(() => {
+    importModal.classList.add('active');
+  }, 10);
+
+  // Remove previous event listeners to avoid duplicates
+  const replaceBtn = document.getElementById('replaceAll');
+  const mergeBtn = document.getElementById('mergeList');
+  const cancelBtn = document.getElementById('cancelImport');
+
+  replaceBtn.replaceWith(replaceBtn.cloneNode(true));
+  mergeBtn.replaceWith(mergeBtn.cloneNode(true));
+  cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+
+  // Reassign buttons after cloning
+  const newReplaceBtn = document.getElementById('replaceAll');
+  const newMergeBtn = document.getElementById('mergeList');
+  const newCancelBtn = document.getElementById('cancelImport');
+
+  newReplaceBtn.addEventListener('click', () => {
+    performImport(importedList, 'replace');
+    closeImportModal();
+  });
+
+  newMergeBtn.addEventListener('click', () => {
+    performImport(importedList, 'merge');
+    closeImportModal();
+  });
+
+  newCancelBtn.addEventListener('click', () => {
+    closeImportModal();
+  });
+
+  importModal.addEventListener('click', (e) => {
+    if (e.target === importModal) {
+      closeImportModal();
+    }
+  });
+
+  document.addEventListener('keydown', function escHandler(e) {
+    if (e.key === 'Escape') {
+      closeImportModal();
+      document.removeEventListener('keydown', escHandler);
+    }
+  });
+}
+
+/**
+ * Closes the import modal
+ */
+function closeImportModal() {
+  const importModal = document.getElementById('importModalOverlay');
+  if (!importModal) return;
+
+  importModal.classList.remove('active');
+  importModal.setAttribute('aria-hidden', 'true');
+  showLoader(false);
+
+  setTimeout(() => {
+    importModal.style.display = 'none';
+  }, 300);
+}
+
+/**
+ * Performs the actual import operation
+ * @param {Array} importedList - The list to import
+ * @param {string} mode - Import mode ('replace' or 'merge')
+ */
+function performImport(importedList, mode) {
+  showLoader(true);
+  
+  try {
+    if (mode === 'replace') {
+      // Completely replace the current list
+      animeList = [...importedList];
+    } else if (mode === 'merge') {
+      // Merge lists and remove duplicates based on item value
+      const existingValues = new Set(animeList.map(item => item.value.toLowerCase()));
+      const uniqueImports = importedList.filter(item => !existingValues.has(item.value.toLowerCase()));
+      
+      // Add only unique items to the existing list
+      animeList = [...animeList, ...uniqueImports];
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('animeList', JSON.stringify(animeList));
+    
+    // Update Firebase if connected
+    if (database && animeInDB) {
+      // Remove all items first
+      remove(animeInDB)
+        .then(() => {
+          // Then add all items back
+          const promises = animeList.map(anime => push(animeInDB, anime));
+          return Promise.all(promises);
+        })
+        .then(() => {
+          showToast(`Import successful: ${importedList.length} items ${mode === 'replace' ? 'replaced' : 'merged'}`, 'success');
+        })
+        .catch(error => {
+          console.error("Firebase sync error:", error);
+          showToast('Items imported locally, but Firebase sync failed', 'error');
+        })
+        .finally(() => {
+          showLoader(false);
+          renderAnimeList();
+        });
+    } else {
+      // Local only
+      showLoader(false);
+      renderAnimeList();
+      showToast(`Import successful: ${importedList.length} items ${mode === 'replace' ? 'replaced' : 'merged'}`, 'success');
+    }
+  } catch (error) {
+    console.error('Import execution error:', error);
+    showToast('Failed to import: ' + error.message, 'error');
+    showLoader(false);
+  }
+}
+
+// Add to your DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', () => {
+  // Attach export function to export button
+  const exportButton = document.getElementById('exportButton');
+  if (exportButton) {
+    exportButton.addEventListener('click', exportAnimeList);
+    console.log('Export button handler attached');
+  } else {
+    console.warn('Export button not found in the DOM');
+  }
+  
+  // Attach import function to import button
+  const importButton = document.getElementById('importButton');
+  if (importButton) {
+    importButton.addEventListener('click', importAnimeList);
+    console.log('Import button handler attached');
+  } else {
+    console.warn('Import button not found in the DOM');
+  }
+  
+  // keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Ctrl+E or Cmd+E (Mac) for export
+    if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+      e.preventDefault();
+      exportAnimeList();
+    }
+    
+    // Ctrl+I or Cmd+I (Mac) for import
+    if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+      e.preventDefault();
+      importAnimeList();
+    }
+  });
+});
+
+
+/**
+ * Export the anime list as a JSON file
+ */
+function exportAnimeList() {
+  if (animeList.length === 0) {
+    showToast('Your anime list is empty. Nothing to export.', 'default');
+    return;
+  }
+
+  try {
+    const dataStr = JSON.stringify(animeList, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'anime-list.json';
+    a.style.display = 'none'; // Hide the element
+    document.body.appendChild(a);
+    a.click();
+    
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+
+    showToast('Anime list exported successfully!', 'success');
+  } catch (error) {
+    console.error('Export error:', error);
+    showToast('Failed to export anime list', 'error');
+  }
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const exportButton = document.getElementById('exportButton');
+  if (exportButton) {
+    exportButton.addEventListener('click', exportAnimeList);
+    console.log('Export button handler attached');
+  } else {
+    console.warn('Export button not found in the DOM');
+  }
+});
+
+// keyboard shortcut
+document.addEventListener('keydown', (e) => {
+  // Ctrl+E or Cmd+E (Mac) for export
+  if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+    e.preventDefault();
+    exportAnimeList();
+  }
+});
+
 // Service worker registration for offline support
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -656,6 +952,6 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
-
+ 
 // TODO: Minify this JavaScript file during production build
 
