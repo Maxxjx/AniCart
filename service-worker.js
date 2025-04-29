@@ -108,8 +108,7 @@
 
 // // Function to sync data when back online
 // function syncData() {
-//   // This would be implemented to push locally saved data to Firebase
-//   // when the connection is restored
+ 
 //   return self.clients.matchAll()
 //     .then(clients => {
 //       if (clients && clients.length) {
