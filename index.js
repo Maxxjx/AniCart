@@ -861,13 +861,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   // Attach import function to import button
-  const importButton = document.getElementById('importButton');
-  if (importButton) {
-    importButton.addEventListener('click', importAnimeList);
-    console.log('Import button handler attached');
-  } else {
-    console.warn('Import button not found in the DOM');
-  }
+const importButton = document.getElementById('importButton');
+if (importButton) {
+  importButton.addEventListener('click', importAnimeList);
+  console.log('Import button handler attached');
+} else {
+  console.warn('Import button not found in the DOM');
+}
+
+const importFileInput = document.getElementById('importFileInput');
+if (importFileInput) {
+  importFileInput.addEventListener('change', handleImportFileChange);
+  console.log('Import file input change handler attached');
+} else {
+  console.warn('Import file input not found in the DOM');
+}
   
   // keyboard shortcuts
   document.addEventListener('keydown', (e) => {
@@ -921,24 +929,6 @@ function exportAnimeList() {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
-  const exportButton = document.getElementById('exportButton');
-  if (exportButton) {
-    exportButton.addEventListener('click', exportAnimeList);
-    console.log('Export button handler attached');
-  } else {
-    console.warn('Export button not found in the DOM');
-  }
-});
-
-// keyboard shortcut
-document.addEventListener('keydown', (e) => {
-  // Ctrl+E or Cmd+E (Mac) for export
-  if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
-    e.preventDefault();
-    exportAnimeList();
-  }
-});
 
 // Service worker registration for offline support
 if ('serviceWorker' in navigator) {
