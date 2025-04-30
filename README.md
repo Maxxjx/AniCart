@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="asset/anicartfulllogo.jpg" alt="AniCart logo" width="200"/>
+  <img src="asset/anicartfulllogo.webp" alt="AniCart logo" width="200"/>
 </p>
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
