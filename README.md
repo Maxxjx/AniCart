@@ -8,7 +8,7 @@
 
 A sleek, modern web application for anime and manga enthusiasts to manage their watchlists with real-time synchronization across devices. Built with vanilla JavaScript and Firebase.
 
-![AniCart Screenshot](asset/AniCartscreen.png){ width=800 height=600 }
+![AniCart Screenshot](asset/AniCartscreen.png) { width=800 height=600 }
 
 ## Table of Contents
 - [Features](#features)
